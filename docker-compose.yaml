@@ -1,0 +1,66 @@
+services:
+  apache:
+    build:
+      context: .
+      dockerfile: config/apache/Dockerfile
+    ports:
+      - "8080:80"
+    networks:
+      - backend
+    volumes:
+      - apache_data:/var/www/html
+
+  php-fpm:
+    build:
+      context: .
+      dockerfile: config/php-fpm/Dockerfile
+    networks:
+      - backend
+    volumes:
+      - ./src:/var/www/html
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8081:80"
+    networks:
+      - backend
+    depends_on:
+      - php-fpm
+    volumes:
+      - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./src:/var/www/html
+
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+networks:
+  backend:
+    driver: bridge
+
+#bridge - Štandardná izolovaná sieť pre kontajnery. Nutný port-forwarding pre hostitelsky pristup. Bežné webové aplikácie s databázou
+#host - Kontajner zdieľa sieť s hostiteľom. Iba na Linuxe. Nízka latencia, DNS, VPN
+#overlay - Sieť pre viacero fyzických serverov (Docker Swarm). Škáľovanie v clustri
+#macvlan - Kontajnery dostanú vlastnú MAC/IP adresu. Priamy prístup k fyzickej sieti
+#none - Žiadna sieťová konektivita. Sandboxy, bezpečnostné testovanie
+
+volumes:
+  apache_data:
+  mysql_data:
+
+#named volumes - Keď potrebujeme dáta pre dlhodobé použitie (napr. databázy)
+#bind mount volumes - Pri vývoji aplikácií alebo konfiguráciách (Nginx, PHP)
+#anonymouse volumes - Keď nepotrebujeme perzistenciu po reštarte kontajnera
+#advanced volumes - Keď je potrebn0 pokročilé spravovanie dát (napr. root prístup, bezpečnostné obmedzenia)

@@ -63,4 +63,4 @@ volumes:
 #named volumes - Keď potrebujeme dáta pre dlhodobé použitie (napr. databázy)
 #bind mount volumes - Pri vývoji aplikácií alebo konfiguráciách (Nginx, PHP)
 #anonymouse volumes - Keď nepotrebujeme perzistenciu po reštarte kontajnera
-#advanced volumes - Keď je potrebn0 pokročilé spravovanie dát (napr. root prístup, bezpečnostné obmedzenia)
+#advanced volumes - Keď je potrebne pokročilé spravovanie dát (napr. root prístup, bezpečnostné obmedzenia)

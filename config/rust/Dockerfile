@@ -1,31 +1,14 @@
-# === Development Stage ===
-FROM rust:1.76-slim AS development
-
+# 1. Build stage
+FROM rust:1.81 as builder
 WORKDIR /app
 
-# Pre rýchlejšie cacheovanie závislostí
-COPY ./src/rust-app/Cargo.toml ./src/rust-app/Cargo.lock ./
-RUN mkdir src && echo "fn main() {println!(\"placeholder\");}" > ./src/rust-app/main.rs
-RUN cargo build
-
-# Skutočný kód
-COPY ./src/rust-app/ ./src
-RUN cargo build
-
-# === Build Stage ===
-FROM rust:1.76-slim AS build
-
-WORKDIR /app
-
-COPY . .
+# Skopíruj celý projekt a postav znova
+COPY ./src/rust-app .
 RUN cargo build --release
 
-# === Production Stage ===
-FROM debian:bookworm-slim AS production
+# 2. Run stage (čistý, malý image)
+FROM rust:1.81
 WORKDIR /app
-
-# Na čítanie obrázkových vlastností použijeme image crate (alebo `imageinfo`)
-RUN apt-get update && apt-get install -y ca-certificates libssl-dev && apt-get clean
-
-COPY --from=build /app/target/release/rust-app /usr/local/bin/app
-CMD ["app"]
+COPY --from=builder /app/target/release/rust-hello-world .
+EXPOSE 8080
+CMD ["./rust-hello-world"]

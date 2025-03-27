@@ -37,7 +37,7 @@ services:
       dockerfile: ../../config/nodejs/Dockerfile
       target: development
       args:
-        - NODE_ENV=production
+        - NODE_ENV=development
     volumes:
       - /app/node_modules
       - ./src/vue-app:/app
@@ -45,6 +45,15 @@ services:
     ports:
       - "8082:8080"
       - "9000:9000"
+    networks:
+      - backend
+
+  rust-app:
+    build:
+      context: .
+      dockerfile: config/rust/Dockerfile
+    ports:
+      - "8083:8080"
     networks:
       - backend
 

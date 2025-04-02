@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /var/www/html
 
 # Kopírujeme zdrojový kód do kontajnera
-COPY ./src /var/www/html
+COPY ./src/php-app /var/www/html
 
 # Nastavíme správne vlastníctvo a oprávnenia
 RUN chown -R www-data:www-data /var/www/html

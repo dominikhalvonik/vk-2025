@@ -17,7 +17,7 @@ services:
     networks:
       - backend
     volumes:
-      - ./src:/var/www/html
+      - ./src/php-app:/var/www/html
 
   nginx:
     image: nginx:latest
@@ -29,7 +29,33 @@ services:
       - php-fpm
     volumes:
       - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./src:/var/www/html
+      - ./src/php-app:/var/www/html
+
+  vue-app:
+    build:
+      context: ./src/vue-app
+      dockerfile: ../../config/nodejs/Dockerfile
+      target: development
+      args:
+        - NODE_ENV=development
+    volumes:
+      - /app/node_modules
+      - ./src/vue-app:/app
+    command: [ "npm", "run", "dev", "--", "--host" ]
+    ports:
+      - "8082:8080"
+      - "9000:9000"
+    networks:
+      - backend
+
+  rust-app:
+    build:
+      context: .
+      dockerfile: config/rust/Dockerfile
+    ports:
+      - "8083:8080"
+    networks:
+      - backend
 
   mysql:
     image: mysql:latest

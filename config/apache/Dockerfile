@@ -12,7 +12,7 @@ RUN docker-php-ext-install gd pdo pdo_mysql
 WORKDIR /var/www/html
 
 # Kopírujeme súbory z lokálneho adresára /src do pracovného adresára kontajnera
-COPY ./src /var/www/html
+COPY ./src/php-app /var/www/html
 
 # Apache už počúva na porte 80, takže môžeme tento port označiť pre expozíciu
 EXPOSE 80

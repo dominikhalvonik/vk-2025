@@ -13,6 +13,8 @@ spec:
       labels:
         app: php-nginx-app
     spec:
+      imagePullSecrets:
+        - name: ukf-secret
       volumes:
         - name: php-config-volume
           configMap:
